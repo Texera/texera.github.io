@@ -197,7 +197,7 @@ The "Hash Join" operator requires the two key attributes to have the same type.
 
 #### Aggregate Opeartor
 
-The "Aggregate" operator supports multiple aggregation functions, like sum, count, concat, etc. Each aggregation function has different requirements regarding its input attribute. For example, the `sum` function must be computed on a numeric type attribute (integer, long, double, or timestamp), and the `concat` function must be computed on a string type attribute, while the `count` function has no type requirement.
+The "Aggregate" operator supports multiple aggregation functions, like `sum`, `count`, `concat`, etc. Each aggregation function has different requirements regarding its input attribute. For example, the `sum` function must be computed on a numeric type attribute (integer, long, double, or timestamp), and the `concat` function must be computed on a string type attribute, while the `count` function has no type requirement.
 
 <figure align="center">
 <img src="aggregate-type-validation.png" alt="Figure 6" style="max-width:23rem">
