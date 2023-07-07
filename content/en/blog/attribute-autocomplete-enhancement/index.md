@@ -7,7 +7,8 @@ lastmod: 2023-06-18T20:58:20-07:00
 draft: false
 weight: 50
 #images: ["attribute-autocomplete-enhancement.jpg"]
-contributors: ["Chengxi Li, UC Irvine."]
+contributors: ["Chengxi Li"]
+affiliations: ["Computer Science, UC Irvine"]
 ---
 ## Background
 
