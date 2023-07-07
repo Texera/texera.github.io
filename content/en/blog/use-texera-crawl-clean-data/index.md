@@ -8,8 +8,8 @@ draft: false
 weight: 50
 # images: ["say-hello-to-doks.png"]
 contributors: ["Zuozhi Wang"]
+affiliations: ["Computer Science, UC Irvine"]
 ---
-##### (This work was done by the author at Department of Computer Science, UC Irvine.)
 
 Crawling is a common yet important task to collect data from the Web. However, developing a good crawling pipeline is notoriously challenging due to the following reasons:
 1. The content and format of the Web pages can be quite unpredictable. Many "edge cases" need to be covered by the crawler and the parser. Moreover, these edge cases can happen after the pipeline has been running for a long time. This could cause the parser to extract wrong information, or even crash the program.
