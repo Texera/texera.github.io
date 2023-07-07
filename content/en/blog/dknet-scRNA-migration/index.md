@@ -6,7 +6,8 @@ date: 2023-06-27T14:26:21-07:00
 lastmod: 2023-06-27T14:26:21-07:00
 draft: false
 weight: 50
-contributors: [ "Yicong Huang, UC Irvine." ]
+contributors: [ "Yicong Huang" ]
+affiliations: ["Computer Science, UC Irvine"]
 ---
 
 RNA sequence analysis has revolutionized our understanding of gene expression at the single-cell level, providing unprecedented insights into cellular heterogeneity and dynamics. [Seurat](https://satijalab.org/seurat/index.html), a popular R library, has emerged as a versatile toolkit for the comprehensive analysis of single-cell RNA sequencing ([scRNA-seq](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8964935/)) data.

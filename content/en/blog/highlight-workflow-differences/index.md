@@ -8,8 +8,9 @@ draft: false
 weight: 50
 # images: ["highlight-workflow-differences.jpg"]
 contributors: ["Jingqi Yao"]
+affiliations: ["Computer Science, UC Irvine"]
 ---
-##### (This work was done by the author at Department of Computer Science, UC Irvine.)
+
 Texera has a version control system that automatically saves workflow versions so that users can easily view or restore early versions. The current implementation only shows each historical workflow. Users may find it hard to see how it differs from another workflow version, especially when there is only a tiny change. We want to improve the usability of the version control system by visually displaying the difference between two workflow versions.
 
 ### Task Overview

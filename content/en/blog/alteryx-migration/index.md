@@ -7,8 +7,8 @@ lastmod: 2023-06-14T17:00:00-07:00
 draft: false
 weight: 50
 contributors: ["Ethan Wong"]
+affiliations: ["Computer Science, UC Irvine"]
 ---
-##### (This work was done by the author at Department of Computer Science, UC Irvine.)
 
 In this blog, we discuss how we extended Texera’s usability by providing more native support for certain advanced data analysis operations and demonstrate their benefits in a workflow migrated from Alteryx.
 
