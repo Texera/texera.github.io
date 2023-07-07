@@ -7,18 +7,18 @@ lastmod: 2023-06-18T20:58:20-07:00
 draft: false
 weight: 50
 #images: ["attribute-autocomplete-enhancement.jpg"]
-contributors: ["Chengxi Li"]
+contributors: ["Chengxi Li, UC Irvine."]
 ---
 ## Background
 
 ### What are operator properties
 
-Texera workflows consist of operators. Every operator has properties as the parameters of its data-process function. For example, in Figure 1, the "Filter" operator has three properties, `Attribute`, `Condition`, and `Value`. 
+Texera workflows consist of operators. Every operator has properties as the parameters of its data-process function. For example, in Figure 1, the "Filter" operator has three properties, `Attribute`, `Condition`, and `Value`.
 
 Some attribute properties accept input attribute names as values, usually describing the attributes that the operator applies. In this operator, `Attribute` is an attribute property, and `price` is the attribute to which the filter will apply. The property values in Figure 1 indicate that the operator filters the records with an `price` greater than 20.
 
 <figure align="center">
-<img src="filter-operator-editor.png" alt="Figure 1" style="max-width:23rem">
+<img src="filter-operator-editor.png" alt="Figure 1" style="max-width:18rem">
 <figcaption><i>Figure 1: Filter Operator Properties</i></figcaption>
 </figure>
 
@@ -31,7 +31,7 @@ Various formats of data can be processed by Texera, and the format of data is re
 Many operators have properties that accept an input attribute name as the value. For example, the `Attribute` property in the "Sentiment Analysis" operator takes the name of the attribute on which it will perform analysis. The autocomplete feature allows users to select an input attribute from a dropdown menu instead of manually typing in the name.
 
 <figure align="center">
-<img src="autocomplete-dropdown-menu.png" alt="Figure 2" style="max-width:17rem">
+<img src="autocomplete-dropdown-menu.png" alt="Figure 2" style="max-width:18rem">
 <figcaption><i>Figure 2: Dropdown Menu for Attribute Autocomplete</i></figcaption>
 </figure>
 
@@ -78,11 +78,11 @@ To automatically correct the attribute selection in operators' properties, we ne
 
 It is easy for an operator to know when its input schema is changed. However, it can be challenging to determine what attribute is changed and what it changes to because all an operator knows about its input is the input schema, which is a list of attribute names and types.
 
-In our auto attribute correction implementation, we choose to compare the input schema before the change and that after the change. That is, we keep a copy of the input schemas for all operators. When an input schema changes, we compare the new input schema with the last input schema in our copy and determine the change. 
+In our auto attribute correction implementation, we choose to compare the input schema before the change and that after the change. That is, we keep a copy of the input schemas for all operators. When an input schema changes, we compare the new input schema with the last input schema in our copy and determine the change.
 
 When comparing the old and new input schemas, we can find what attributes are unchanged. But there may be attributes in the old and new input schemas that do not match, which means that these attributes may be 1) newly created in the new schema, 2) renamed, or 3) deleted in the new schema.
 
-Tables 1 and 2 are examples of the old and new input schemas. Let us try to determine how it changes. Here is a possible situation that happened to the input schema. Attribute `id` is unchanged since it exists in both schemas. `favorite_count` is deleted since it exists in the old schema but disappeared in the new schema. `content` is renamed to `text` since `content` is no longer there in the new schema but there's a new `text` with the same string type in the new schema. Lastly, `retweeted` is a new attribute since there is no attribute similar to it in the old schema. 
+Tables 1 and 2 are examples of the old and new input schemas. Let us try to determine how it changes. Here is a possible situation that happened to the input schema. Attribute `id` is unchanged since it exists in both schemas. `favorite_count` is deleted since it exists in the old schema but disappeared in the new schema. `content` is renamed to `text` since `content` is no longer there in the new schema but there's a new `text` with the same string type in the new schema. Lastly, `retweeted` is a new attribute since there is no attribute similar to it in the old schema.
 
 However, this difference could be inaccurate. It is possible that `content` is not renamed but deleted, and `text` is a new attribute with the same type string. Moreover, it is also possible that `favorite_count` is not deleted but renamed to `retweeted` and converted from integer type to boolean type.
 
@@ -102,7 +102,7 @@ However, this difference could be inaccurate. It is possible that `content` is n
 |text|string|
 |retweeted|boolean|
 
-Given that the determination is not unique, we need an algorithm to determine what are the most likely attribute changes that happened to the input schema. With the algorithm, we can know for the unmatched attribute, which attribute in the old schema corresponds to the attribute in the new schema, or whether an attribute is created or deleted. Inspired by how we compute the similarity between two strings using edit distance as the metric, we adapt our own edit distance algorithm to compute the similarity between two attributes (name and type). 
+Given that the determination is not unique, we need an algorithm to determine what are the most likely attribute changes that happened to the input schema. With the algorithm, we can know for the unmatched attribute, which attribute in the old schema corresponds to the attribute in the new schema, or whether an attribute is created or deleted. Inspired by how we compute the similarity between two strings using edit distance as the metric, we adapt our own edit distance algorithm to compute the similarity between two attributes (name and type).
 
 In the Levenshtein edit distance algorithm used for strings <https://en.wikipedia.org/wiki/Levenshtein_distance>, the distance is measured by the minimum number of single-character edits (insertions, deletions, or substitutions) required to change one word into the other. For example, the distance between "**k**itten" and  "**s**itten" is 1 because of a single substitution of "s" for "k".
 
@@ -169,7 +169,7 @@ Operators have different constraints on the attribute type depending on their fu
 The "Sentiment Analysis" operator takes one attribute of string type. When users select an attribute with an integer type, we prompt a warning message.
 
 <figure align="center">
-<img src="sentiment-analysis-type-validation.png" alt="Figure 4" style="max-width:23rem">
+<img src="sentiment-analysis-type-validation.png" alt="Figure 4" style="max-width:18rem">
 <figcaption><i>Figure 4: Sentiment Analysis Type Validation Example</i></figcaption>
 </figure>
 
@@ -178,22 +178,22 @@ The "Sentiment Analysis" operator takes one attribute of string type. When users
 The "Hash Join" operator requires the two key attributes to have the same type.
 
 <figure align="center">
-<img src="hash-join-type-validation.png" alt="Figure 5" style="max-width:23rem">
+<img src="hash-join-type-validation.png" alt="Figure 5" style="max-width:18rem">
 <figcaption><i>Figure 5: Hash Join Type Validation Example</i></figcaption>
 </figure>
 
-#### Aggregate Opeartor
+#### Aggregate Operator
 
 The "Aggregate" operator supports multiple aggregation functions, such as `sum`, `count`, `concat`, etc. Each aggregation function has different requirements regarding its input attribute. For example, the `sum` function must be computed on a numeric type attribute (integer, long, double, or timestamp), and the `concat` function must be computed on a string type attribute, while the `count` function has no type requirement.
 
 <figure align="center">
-<img src="aggregate-type-validation.png" alt="Figure 6" style="max-width:23rem">
+<img src="aggregate-type-validation.png" alt="Figure 6" style="max-width:18rem">
 <figcaption><i>Figure 6: Aggregate Type Validation Example</i></figcaption>
 </figure>
 
 ### Implementation
 
-Given that each operator has different type constraints, we write attribute type rules for each operator that has type constraints and provide a warning when the attribute selection violates the rules. We will focus on how the type rules are written and checked. The attribute type rules are considered operator metadata and thus are a part of the operator schema supplied from the backend. As the operator schema is in the JSON Schema format, we designed our attribute type rules JSON to match the JSON Schema as much as possible. The attribute type rules are injected into operator schemas as an attribute called `attributeTypeRules`. 
+Given that each operator has different type constraints, we write attribute type rules for each operator that has type constraints and provide a warning when the attribute selection violates the rules. We will focus on how the type rules are written and checked. The attribute type rules are considered operator metadata and thus are a part of the operator schema supplied from the backend. As the operator schema is in the JSON Schema format, we designed our attribute type rules JSON to match the JSON Schema as much as possible. The attribute type rules are injected into operator schemas as an attribute called `attributeTypeRules`.
 
 The attribute type rules may contain three constraints:  `enum`  that defines the possible values of the type,  `const`  (`const.$data`) that is used to check the equality of two attribute types, and  `allOf`  (for  `if`-`then`  sets) for more complicated cases. The rules may have multiple constraints but must satisfy all of them.
 
@@ -217,12 +217,12 @@ Here are the attribute type schemas for the three operators. Those schemas cover
 In the "Sentiment Analysis" operator, the attribute type of `attribute` must be a string.
 
 ```JSON
-{  
-  "attributeTypeRules": {  
-    "attribute": {  
-      "enum": ["string"]  
-    }  
-  }  
+{
+  "attributeTypeRules": {
+    "attribute": {
+      "enum": ["string"]
+    }
+  }
 }
 ```
 
@@ -248,7 +248,7 @@ In the "Hash Join" operator, the attribute type of `buildAttributeName` (Left In
 
 In the "Aggregate" operator, if  `aggFunction`'s value is "sum", "average", "min", or "max", then the attribute type of "attribute" can only be numeric (integer, long, double, or timestamp). Similarly, if  `aggFunction`'s value is "concat", then the attribute type of "attribute must be "string". If  `aggFunction`  has other values, like "count", then it has no constraint.
 
-All  `if-then`  in  the `allOf` array must be satisfied. 
+All  `if-then`  in  the `allOf` array must be satisfied.
 
 ```JSON
 {
@@ -285,7 +285,7 @@ All  `if-then`  in  the `allOf` array must be satisfied.
 
 ### Operators with Type Rules
 
-The following operators will have the type validation feature. 
+The following operators will have the type validation feature.
 
 - Regular Expression
 - Dictionary Matcher
