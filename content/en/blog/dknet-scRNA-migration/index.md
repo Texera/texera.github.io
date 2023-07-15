@@ -1,5 +1,5 @@
 ---
-title: "Using Texera to perform single-cell RNA sequencing analysis with R Language"
+title: "Using Texera to Perform Single-cell RNA Sequencing Analysis with R Language"
 description: ""
 lead: "We share the experience of using Python UDFs in Texera to execute R code to perform RNA sequence analysis."
 date: 2023-06-27T14:26:21-07:00

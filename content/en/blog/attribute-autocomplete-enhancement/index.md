@@ -2,8 +2,8 @@
 title: "Enhancing Attribute Autocomplete Functionality - Auto Correction and Type Validation"
 description: ""
 lead: "In this blog, we discuss the two new enhancements added to the attribute autocomplete feature in Texera, auto attribute correction and attribute type validation."
-date: 2023-06-18T20:58:20-07:00
-lastmod: 2023-06-18T20:58:20-07:00
+date: 2023-07-07T10:38:20-07:00
+lastmod: 2023-07-07T10:38:20-07:00
 draft: false
 weight: 50
 #images: ["attribute-autocomplete-enhancement.jpg"]
