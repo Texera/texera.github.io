@@ -25,32 +25,31 @@ In the literature, language servers are available to perform static syntax check
   </a>
   <figcaption align = "center">
     <i>
-      <b>Figure 1.</b> The old code editor which does not highlight errors, provide suggestions or any contextual information.
+      <b>Figure 1.</b> The old code editor, which does not highlight errors, nor provide suggestions or contextual information.
     </i>
   </figcaption>
 </figure>
 
 ### Existing Solutions
-In our search for a suitable solution, we carefully evaluated the available options on the market. Some options included code analysis libraries such as [Pygments](https://pygments.org/) for Python, language-specific tools such as the [Jedi library](https://jedi.readthedocs.io/en/latest/).
-There were disadvantages of using libraries for our task as they have limited editor integrations, lack a standardized protocol, and do not provide advanced features. After a thorough evaluation, we chose the [Language Server Protocol](https://langserver.org/) (LSP), a communication channel between a client and a language smartness provider server. The decision to adopt LSP was driven by its status as an open standard and its widespread adoption by industry leaders such as Codenvy, Red Hat, and Sourcegraph. Moreover, LSP provides advanced Python developers with an IDE-like experience and offers excellent extensibility, making it a perfect fit for our requirements. In the subsequent sections, we will explore the integration of LSP and the significant advantages it brings to our UDF code editor.
+In our search for a suitable solution, we carefully evaluated the available options on the market. Some options included code-analysis libraries such as [Pygments](https://pygments.org/) for Python, and language-specific tools such as the [Jedi library](https://jedi.readthedocs.io/en/latest/).
+There were disadvantages of using libraries for our task as they have limited editor integration, lack a standardized protocol, and do not provide advanced features. After a thorough evaluation, we chose the [Language Server Protocol](https://langserver.org/) (LSP), a communication channel between a client and a language smartness provider server. The decision to adopt LSP was driven by its status as an open standard and its widespread adoption by industry leaders such as Codenvy, Red Hat, and Sourcegraph. Moreover, LSP provides advanced Python developers with an IDE-like experience and offers excellent extensibility, making it a perfect fit for our requirements. In the subsequent sections, we will explore the integration of LSP and the significant advantages it brings to our UDF code editor.
 
 
 ### Challenges
 We encountered two primary challenges:
-- Integrating LSP with Texera’s existing architecture: The current Texera architecture relies on the robust [Monaco editor](https://github.com/microsoft/monaco-editor), a popular code editor used by millions of developers worldwide. It is important to ensure a smooth transition to LSP while preserving the functionality and familiarity of Monaco.
+- Integrating LSP with Texera’s existing architecture: The previous Texera architecture relies on the robust [Monaco editor](https://github.com/microsoft/monaco-editor), a popular code editor used by millions of developers worldwide. It is important to ensure a smooth transition to LSP while preserving the functionality and familiarity of Monaco.
 - Compatibility with the existing shared editing functionality: Texera’s UDF code editor supports collaborative editing (powered by [Yjs](https://github.com/yjs/yjs)), enabling multiple users to work simultaneously on the same UDF. Introducing LSP raised concerns about inadvertently propagating suggestions and pop-ups to other users who might be working on different sections or simply reading the code of the same UDF operator.
 
 
 ### Implementation
-To address the challenges, we propose a new architecture of the UDF editor as shown in Figure 1.
-
+To address the challenges, we propose a new architecture of the UDF editor as shown in Figure 2.
 <figure  align="center">
   <a href="language-server-architecture.png">
     <img src="language-server-architecture.png" alt="Fig 2" style="width:80%">
   </a>
   <figcaption align = "center">
     <i>
-      <b>Figure 2.</b> Architecture of connecting UDF editor with Language server.
+      <b>Figure 2.</b> New architecture of connecting UDF editor with Language server.
     </i>
   </figcaption>
 </figure>
@@ -65,8 +64,12 @@ The new architecture includes a Language Client and a Python Language Server tha
 
 
 
-This architecture allows shared editing to function seamlessly. The suggestions and pop-ups provided by the language servers were carefully scoped to the specific user's context. When new characters are added to a UDF Editor, two requests are created: one to the shared editing server and the other to the monaco language client. Every user has their own copy of the UDF editor. By extension the language client, the response from the python language server is sent to the origin and not to a different client. This design prevents inadvertently propagating suggestions and pop-ups to other users. This behavior is shown in the Figure 3:
-
+This architecture allows shared editing to function seamlessly.
+The suggestions and pop-ups provided by the language servers were carefully scoped to the specific user's context.
+When new characters are added to a UDF Editor, two requests are created: one to the shared editing server and the other to the monaco language client.
+Every user has their own copy of the UDF editor.
+By extending the language client, the response from the python language server is sent to the origin and not to a different client. This design prevents inadvertently propagating suggestions and pop-ups to other users.
+This behavior is shown in Figure 3:
 <figure align="center">
   <a href="multi-user.png">
     <img src="multi-user.png" alt="Fig 3" style="width:80%">
@@ -168,4 +171,4 @@ In this blog, we shared how we used the language server protocol to enhance the 
 
 
 #### Acknowledgements
-Thanks to Yicong Huang, Prof. Chen Li, and the Texera team, for their help in the project and this blog.
+Thanks to Prof. Chen Li and the Texera team for their help in the project and this blog.
