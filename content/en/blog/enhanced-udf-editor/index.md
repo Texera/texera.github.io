@@ -3,8 +3,8 @@ title: "Enhancing the UDF Editor by Adding Language Server Support"
 description: ""
 lead: "In this blog, we discuss how we improved the user experience of the UDF code editor in Texera by integrating a Python language server.
 "
-date: 2023-07-17T15:44:55-07:00
-lastmod: 2023-07-17T15:44:55-07:00
+date: 2023-08-07T11:38:41-07:00
+lastmod: 2023-08-07T11:38:41-07:00
 draft: false
 weight: 50
 contributors: [ "Aditya Verma", "Dhruv Raipure", "Jiaxi Chen", "Sreetej Reddy",  "Yicong Huang" ]
