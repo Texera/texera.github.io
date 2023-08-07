@@ -21,7 +21,7 @@ In the literature, language servers are available to perform static syntax check
 
 <figure align="center">
   <a href="editor-without-language-server.png">
-    <img src="editor-without-language-server.png" alt="Fig 1" style="width:60%">
+    <img src="editor-without-language-server.png" alt="Fig 1" style="width:70%">
   </a>
   <figcaption align = "center">
     <i>
