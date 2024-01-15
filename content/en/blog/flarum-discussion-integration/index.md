@@ -38,6 +38,31 @@ We encountered two primary challenges:
 - Apache2 server was chosen to host out flarum discussion forum.
 - Scripts were written to enable auto setup of forum on Windows, Mac OS as well as Ubuntu for deployment and development purposes.
 
+1. **User Autoauthentication**:
+  <figure align="center">
+  <a href="user-authentication.png">
+    <img src="user-authentication.png" alt="Fig 6" style="width:100%">
+  </a>
+  <figcaption align = "center">
+    <i>
+      <b>Figure 1.</b> user logs into Texera.
+    </i>
+  </figcaption>
+</figure>
+
+2. **Where to run flarum**:
+<figure align="center">
+  <a href="where-to-run.png">
+    <img src="where-to-run.png" alt="Fig 7" style="width:100
+    %">
+  </a>
+  <figcaption align = "center">
+    <i>
+      <b>Figure 2.</b> 
+    </i>
+  </figcaption>
+</figure>
+
 ### Demonstration of dicussion features
 
 #### Overview
@@ -67,57 +92,57 @@ We encountered two primary challenges:
 
 1. **User Autoauthentication**: as shown below, when user logs into Texera, user will also appear logged in on the dicussion forum site, thus providing a smooth user experience and making the forum more integrated with other parts of the site.
   <figure align="center">
-  <a href="userSych.gif">
-    <img src="userSych.gif" alt="Fig 6" style="width:60%">
+  <a href="user-sych.gif">
+    <img src="user-sych.gif" alt="Fig 6" style="width:100%">
   </a>
   <figcaption align = "center">
     <i>
-      <b>Figure 1.</b> user logs into Texera.
+      <b>Figure 3.</b> user logs into Texera.
     </i>
   </figcaption>
 </figure>
 
 2. **Create a dicussion, Make basic posts,Reply to posts**: Here shows how a typical discussion/post is created. Everytime the user creates a dicussion, they can put it under different tags such as "general".
 <figure align="center">
-  <a href="makeabasicpost.gif">
-    <img src="makeabasicpost.gif" alt="Fig 6" style="width:60%">
+  <a href="make-a-basic-post.gif">
+    <img src="make-a-basic-post.gif" alt="Fig 6" style="width:100%">
   </a>
   <figcaption align = "center">
     <i>
-      <b>Figure 2.</b> User creates a dicussion and publishes the first post.
+      <b>Figure 4.</b> User creates a dicussion and publishes the first post.
     </i>
   </figcaption>
 </figure>
 
 <figure align="center">
   <a href="reply1.png">
-    <img src="reply1.png" alt="Fig 6" style="width:60%">
+    <img src="reply1.png" alt="Fig 6" style="width:100%">
   </a>
   <figcaption align = "center">
     <i>
-      <b>Figure 3.</b> a reply button under each posts for other users to reply to 
+      <b>Figure 5.</b> a reply button under each posts for other users to reply to 
     </i>
   </figcaption>
 </figure>
 <figure align="center">
   <a href="reply2.png">
-    <img src="reply2.png" alt="Fig 6" style="width:60%">
+    <img src="reply2.png" alt="Fig 6" style="width:100%">
   </a>
   <figcaption align = "center">
     <i>
-      <b>Figure 4.</b> the composer view of the reply
+      <b>Figure 6.</b> the composer view of the reply
     </i>
   </figcaption>
 </figure>
 
 3. **Create a private dicussion**: Users with given privileges can create private discussions that only visible to a selected group of users
 <figure align="center">
-  <a href="privatedicus.gif">
-    <img src="privatedicus.gif" alt="Fig 7" style="width:60%">
+  <a href="private-discus.gif">
+    <img src="private-discus.gif" alt="Fig 7" style="width:100%">
   </a>
   <figcaption align = "center">
     <i>
-      <b>Figure 5.</b> user creates a privite dicussion under a different tab, chooses the users/groups that this discussion can be visible to
+      <b>Figure 7.</b> user creates a privite dicussion under a different tab, chooses the users/groups that this discussion can be visible to
     </i>
   </figcaption>
 </figure>
@@ -129,19 +154,19 @@ We encountered two primary challenges:
   </a>
   <figcaption align = "center">
     <i>
-      <b>Figure 6.</b> 
+      <b>Figure 8.</b> 
     </i>
   </figcaption>
 </figure>
 
 5. **View and reply count**:
 <figure align="center">
-  <a href="flarumviewcount.png">
+  <a href="flarum-view-count.png">
     <img src="flarumviewcount.png" alt="Fig 9" style="width:100%">
   </a>
   <figcaption align = "center">
     <i>
-      <b>Figure 7.</b> the number of views and replies for each dicussion is displayed
+      <b>Figure 9.</b> the number of views and replies for each dicussion is displayed
     </i>
   </figcaption>
 </figure>
