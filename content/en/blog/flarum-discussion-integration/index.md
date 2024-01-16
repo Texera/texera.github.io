@@ -38,19 +38,19 @@ We encountered two primary challenges:
 - Apache2 server was chosen to host out flarum discussion forum.
 - Scripts were written to enable auto setup of forum on Windows, Mac OS as well as Ubuntu for deployment and development purposes.
 
-1. **User Autoauthentication**:
+1. **User Autoauthentication**: Flarum will run seperately alongside other parts of Texera as a microservice. Several endpoints works hand in hand to ensure consistency of user session and user account
   <figure align="center">
   <a href="user-authentication.png">
     <img src="user-authentication.png" alt="Fig 6" style="width:100%">
   </a>
   <figcaption align = "center">
     <i>
-      <b>Figure 1.</b> user logs into Texera.
+      <b>Figure 1.</b> When user logs into Texera, the angular frontend calls the login endpoint of Texera and Flarum seperatly to ensure users are logged in on both sides. When user registers with Texera, Texera will register the user under Flarum to ensure account consistency.
     </i>
   </figcaption>
 </figure>
 
-2. **Where to run flarum**:
+2. **Where to run flarum**: We ran into long discussions about where to run this service as an additional server would add burden to our development team. It turns out that there is an apache2 server that we have already been using as a proxy. Therefore no additional server will need to be added for hosting flarum as flarum can be hosted on apache2.
 <figure align="center">
   <a href="where-to-run.png">
     <img src="where-to-run.png" alt="Fig 7" style="width:100
@@ -58,10 +58,18 @@ We encountered two primary challenges:
   </a>
   <figcaption align = "center">
     <i>
-      <b>Figure 2.</b> 
+      <b>Figure 2.</b> We decide to have flarum run on the proxy server. 
     </i>
   </figcaption>
 </figure>
+
+3. **installation scripts**: We developed bash and powershell scripts to automatically install and configure flarum, which do those of the followings:
+
+- installing apache2, php and composer
+- create flarum directory with composer and provide configurations for flarum
+- set up database for flarum
+- configure apache2 server
+- restart server to run flarum application
 
 ### Demonstration of dicussion features
 
@@ -162,7 +170,7 @@ We encountered two primary challenges:
 5. **View and reply count**:
 <figure align="center">
   <a href="flarum-view-count.png">
-    <img src="flarumviewcount.png" alt="Fig 9" style="width:100%">
+    <img src="flarum-view-count.png" alt="Fig 9" style="width:100%">
   </a>
   <figcaption align = "center">
     <i>
@@ -173,4 +181,32 @@ We encountered two primary challenges:
 
 6.**Other features**:
 
-### Furture efforts
+<figure align="center">
+  <a href="searchbar.png">
+    <img src="searchbar.png" alt="Fig 7" style="width:100%">
+  </a>
+  <figcaption align = "center">
+    <i>
+      <b>Figure 10.</b> full text search functionality to allow users to search relevant posts
+    </i>
+  </figcaption>
+</figure>
+<figure align="center">
+  <a href="dropdown.png">
+    <img src="dropdown.png" alt="Fig 7" style="width:100%">
+  </a>
+  <figcaption align = "center">
+    <i>
+      <b>Figure 11.</b> search results can be sorted based on different options
+    </i>
+  </figcaption>
+</figure>
+
+### Future efforts
+
+**Mentions extension**: The mentions extension is already included by default when using composer to create flarum directory, which has been able to do the following:
+
+- mentioning of users and groups
+- mentioning of posts, which is used in post replies
+
+**What We are still trying to achieve**: To further integrate the dicussion feature into Texera, we are hoping to be able allow users to mention Texera resources such as workflows and projects. However, this feature is still in developement and rigorous testing needs to ensure this feature will be bug-free.
