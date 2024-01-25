@@ -1,212 +1,236 @@
 ---
 title: "Flarum Discussion Integration"
 description: ""
-lead: "In this blog, we discuss how we integrated Flarum into Texera and the various features it can help to support our system"
+lead: "In this blog, we discuss how we support an online forum in Texera using Flarum"
 date: 2024-01-08T15:13:54-08:00
 lastmod: 2024-01-08T15:13:54-08:00
 draft: false
 weight: 50
 images: ["flarum-discussion-integration.jpg"]
-contributors: ["Yiqun Du", "Henry Liu"]
-affiliations: []
+contributors: ["Yiqun Du", "Henry Liu", "Xinyuan Liu"]
+
+affiliations: [UC Irvine]
 ---
 
-In this blog, we discuss how we seemlessly integrated the forum feature into texera through synchronizing user accounts, user sessions, the features that flarum support, and how we developed scripts for the deployment of this feature in production as well as for development.
+In this blog, we discuss how we support a online discussion forum in Texera using Flarum.
 
-### Motivation
+## Motivation
 
-Being a shared editing machine learning workflow platform that emphasizes on collaboration, allowing discussions through forum between users will be very beneficial. Users can thus post issues, help each other to solve those issues as well as discovering new topics in the field of Data Science.
+As a platform to support collaborative data science, Texera needs an online forum that allows users to post issues, help each other, and discover new topics. We implemented this feature using Flarum, one of the popular open-source solutions available on GitHub. Supported and maintained by a large community of developers, Flarum has been well received due to its modern design, user-friendly interface, and minimal core with high extensibility.
 
-The Flarum Software has been the most popular open source forum software available in Github. Having been supported and maintained by a large active community of developers, Flarum has been well received by its modern design, user-friendly interface, minimal core with high extensibility, which is why we opted to choose this software as our forum software.
+## Challenges
 
-### Challenges
+There were two main challenges:
 
-We encountered two primary challenges:
+- The user management and authentication of Flarum need to be synchronized with the counterparts of Texera. In particular:
+  - When a user logs into Texera, they should be be able to make posts in the discussion forum under that account
+  - When a new user registers in Texera and logs in, the forum needs to recognize that and allow the user to make posts under that account
+  - A user can only access the forum after logging into Texera. If the user is deleted, they should not be able to access the forum.
+- Server of Flarum:
+  - Written in PHP and Javascript (with Typescript), Flarum can only be hosted on Apache2 (httpd) or nginx. Texera is hosted on Dropwizard in a production environment. Introducing a new web server adds complexity to the system.
 
-- The user system and authentication system of dicussion forum (flarum) needs to be sychronized with other parts of Texera so that the whole systems remain consistent, which means:
-  - when a user logs into Texera, they can start making posts in discussion forum under that account
-  - When a new user register with Texera and log in, the forum needs to recognize that and allow the user to make posts under that account
-  - a user can only access the forum after logging into Texera. If the user is deleted or banned, they should not be able to access the forum at all.
-- Where to run flarum:
-  - Written in PHP and Javascript(some Typescript), The flarum software can only be hosted on either Apache2(httpd) or nginx. Texera is mainly hosted on dropwizard. Adding an additional server can add complexity in terms of further maintaining and managing the system.
+## Solution
 
-### Our Implementation
+- We support the synchronization of the user information between the main Texera system and the Flarum system, including account creation and authentication.
+- We chose Apache2 server to host the Flarum discussion forum.
+- We wrote scripts to support auto setup of the forum on Windows, Mac OS, and Ubuntu for deployment.
 
-#### Overview
+### 1. **User Autoauthentication**:
 
-- Our effort ensured the sychroniztion of the user system including account creation and authentication.
-- Apache2 server was chosen to host out flarum discussion forum.
-- Scripts were written to enable auto setup of forum on Windows, Mac OS as well as Ubuntu for deployment and development purposes.
+Flarum runs as a microservice separately from the main parts of Texera. It provides several endpoints to support consistency between the users in Flarum and the main Texera.
 
-1. **User Autoauthentication**: Flarum will run seperately alongside other parts of Texera as a microservice. Several endpoints works hand in hand to ensure consistency of user session and user account
-  <figure align="center">
-  <a href="user-authentication.png">
-    <img src="user-authentication.png" alt="Fig 6" style="width:100%">
+  <figure align="center" style="width: 100%; max-width: none;">
+  <a href="auth1.png">
+    <img src="auth1.png" alt="" style="width:100%">
   </a>
-  <figcaption align = "center">
+  <figcaption align="center" style="font-size: 1.2em;">
     <i>
-      <b>Figure 1.</b> When user logs into Texera, the angular frontend calls the login endpoint of Texera and Flarum seperatly to ensure users are logged in on both sides. When user registers with Texera, Texera will register the user under Flarum to ensure account consistency.
+      <b>Figure 1.</b> When a user logs into Texera, the angular frontend calls the login endpoints of Texera and Flarum separately to ensure users are logged in on both sides. When a user registers in Texera, Texera adds the user in Flarum as well.
     </i>
   </figcaption>
 </figure>
 
-2. **Where to run flarum**: We ran into long discussions about where to run this service as an additional server would add burden to our development team. It turns out that there is an apache2 server that we have already been using as a proxy. Therefore no additional server will need to be added for hosting flarum as flarum can be hosted on apache2.
-<figure align="center">
-  <a href="where-to-run.png">
-    <img src="where-to-run.png" alt="Fig 7" style="width:100
+### 2. **Server of Flarum**:
+
+<figure align="center" style="width: 100%; max-width: none;">
+  <a href="before_after.png">
+    <img src="before_after.png" alt="" style="width:100
     %">
   </a>
-  <figcaption align = "center">
+  <figcaption align = "center" style="font-size: 1.2em;">
     <i>
-      <b>Figure 2.</b> We decide to have flarum run on the proxy server. 
+      <b>Figure 2.</b> We run flarum on the proxy server. 
     </i>
   </figcaption>
 </figure>
 
-3. **installation scripts**: We developed bash and powershell scripts to automatically install and configure flarum, which do those of the followings:
+### 3. **Installation scripts**:
 
-- installing apache2, php and composer
-- create flarum directory with composer and provide configurations for flarum
-- set up database for flarum
-- configure apache2 server
-- restart server to run flarum application
+<p style="font-size:1.2em;">
+We wrote bash and powershell scripts to automatically install and configure Flarum to do the following:
+  <ul>
+    <li>install Apache2, PHP, and composer (the package manager for PHP)</li>
+    <li>create a Flarum directory with composer and provide configurations for Flarum</li>
+    <li>set up the MySQL database for Flarum</li>
+    <li>configure the apache2 server</li>
+    <li>restart the server to run the Flarum application</li>
+  </ul>
+</p>
 
-### Demonstration of dicussion features
+## Features
 
-#### Overview
+The discussion forum includes the following features:
 
-- The Flarum Dicussion forum includes these following features to support our online discussion
-  - Features implemented by us:
-    - Auto-authentication: When the user logs in to Texera, the same user will be logged in automatically in discussion forum as well
-    - Auto-account synchroniztion: When a new user registers and logs into Texera, the new user account will appear in discussion forum
-  - Flarum built in Features:
-    - post creation:
-      - Users can create dicussions with different tags, create posts with in discussions and reply to posts
-    - Search:
-      - A robust search feature to search for dicussions
-      - A dropdown menu displaying options for sorting discussions(latest,oldest, popular)
-    - Admin:
-      - Admins can toggle on and off different extensions
-      - Admins can assign privileges to different groups and users such as starting a discussion, delete posts, flag posts and so on
-      - Admins can change some settings for the whole
-- Others: - Users can like posts, and see how many likes a post receive
-  - Flarum features from extensions: Flarum's minimal core with high extensibility design allows for extensions to be developed to support some custom features, we found the following to be useful to our platform:
-    - fof/byobu(private discussions):
-      - Users with given privileges can create private discussions that only visible a selected group of users
-    - michaelbelgium/flarum-discussion-views:
-      - Users can see the view count and posts count of every discussion.
+- Flarum built-in Features:
+
+  - post creation:
+    - Users can create discussions with tags, create posts within discussions, and reply to posts
+  - Search:
+    - Users can search in discussions
+    - A drop-down menu displays options for sorting discussions (e.g., latest, oldest, popular)
+  - Admin:
+    - Admins can toggle on and off different extensions
+    - Admins can assign privileges to different groups and users
+    - Admins can change settings for the whole forum
+  - Users can "like" posts and see how many likes a post receives
+
+- New features implemented by us:
+  - Auto-authentication: When a user logs into Texera, the same user will be logged in automatically in the discussion forum as well
+  - Auto-account synchronization: When a new user registers and logs into Texera, the same new user account will appear in the discussion forum
+
+Extensions:
+
+- fof/byobu (private discussions): Certain users with privileges can create private discussions that are only visible to a selected group of users
+- michaelbelgium/flarum-discussion-views: Users can see the view count and post count of every discussion.
 
 ## Demonstrations
 
-1. **User Autoauthentication**: as shown below, when user logs into Texera, user will also appear logged in on the dicussion forum site, thus providing a smooth user experience and making the forum more integrated with other parts of the site.
-  <figure align="center">
-  <a href="user-sych.gif">
-    <img src="user-sych.gif" alt="Fig 6" style="width:100%">
+### 1. **User Autoauthentication**:
+
+As shown below, when a user logs into Texera, the user will also log in on the discussion forum site.
+
+  <figure align="center" style="width: 100%; max-width: none;">
+  <a href="https://raw.githubusercontent.com/Texera/texera.github.io/yiqundu/content/en/blog/flarum-discussion-integration/user-sych.gif">
+    <img src="https://raw.githubusercontent.com/Texera/texera.github.io/yiqundu/content/en/blog/flarum-discussion-integration/user-sych.gif" alt="" style="width:100%">
   </a>
-  <figcaption align = "center">
+  <figcaption align = "center" style="font-size:1.2em;">
     <i>
       <b>Figure 3.</b> user logs into Texera.
     </i>
   </figcaption>
 </figure>
 
-2. **Create a dicussion, Make basic posts,Reply to posts**: Here shows how a typical discussion/post is created. Everytime the user creates a dicussion, they can put it under different tags such as "general".
-<figure align="center">
-  <a href="make-a-basic-post.gif">
-    <img src="make-a-basic-post.gif" alt="Fig 6" style="width:100%">
+### 2. **Create a discussion, make posts, and reply to posts**:
+
+The following image shows how a discussion/post is created here. Users can add tags to a post, such as "General."
+
+<figure align="center" style="width: 100%; max-width: none;">
+  <a href="https://raw.githubusercontent.com/Texera/texera.github.io/yiqundu/content/en/blog/flarum-discussion-integration/make-a-basic-post.gif">
+    <img src="https://raw.githubusercontent.com/Texera/texera.github.io/yiqundu/content/en/blog/flarum-discussion-integration/make-a-basic-post.gif" alt="" style="width:100%">
   </a>
-  <figcaption align = "center">
-    <i>
-      <b>Figure 4.</b> User creates a dicussion and publishes the first post.
+  <figcaption align = "center" style="font-size:1.2em;">
+      <b>Figure 4.</b> A user creates a dicussion and publishes the first post.
     </i>
   </figcaption>
 </figure>
 
-<figure align="center">
-  <a href="reply1.png">
-    <img src="reply1.png" alt="Fig 6" style="width:100%">
+<figure align="center" style="width: 100%; max-width: none;">
+  <a href="https://hackmd.io/_uploads/rJldK7XYa.png">
+    <img src="https://hackmd.io/_uploads/rJldK7XYa.png" alt="" style="width:200%">
   </a>
-  <figcaption align = "center">
+  <figcaption align = "center" style="font-size:1.2em;">
     <i>
-      <b>Figure 5.</b> a reply button under each posts for other users to reply to 
-    </i>
-  </figcaption>
-</figure>
-<figure align="center">
-  <a href="reply2.png">
-    <img src="reply2.png" alt="Fig 6" style="width:100%">
-  </a>
-  <figcaption align = "center">
-    <i>
-      <b>Figure 6.</b> the composer view of the reply
+      <b>Figure 5.</b> A reply button under each post 
     </i>
   </figcaption>
 </figure>
 
-3. **Create a private dicussion**: Users with given privileges can create private discussions that only visible to a selected group of users
-<figure align="center">
-  <a href="private-discus.gif">
-    <img src="private-discus.gif" alt="Fig 7" style="width:100%">
+<figure align="center" style="width: 100%; max-width: none;">
+  <a href="https://hackmd.io/_uploads/SJWAFXXK6.png">
+    <img src="https://hackmd.io/_uploads/SJWAFXXK6.png" alt="" style="width:100%">
   </a>
-  <figcaption align = "center">
+  <figcaption align = "center" style="font-size:1.2em;">
     <i>
-      <b>Figure 7.</b> user creates a privite dicussion under a different tab, chooses the users/groups that this discussion can be visible to
+      <b>Figure 6.</b> The composer view of the reply
     </i>
   </figcaption>
 </figure>
 
-4. **Admin features**: The dicussion feature of texera can be managed and maintained through the flarum forum admin page.Admin has various privileges over giving privileges to users, managing user accounts, the visuals of the discussion, and managing extensions.
-<figure align="center">
-  <a href="admin.gif">
-    <img src="admin.gif" alt="Fig 9" style="width:100%">
+### 3. **Create a private discussion**:
+
+Users with certain privileges can create private discussions that are only visible to a selected group of users
+
+<figure align="center" style="width: 100%; max-width: none;">
+  <a href="https://github.com/Texera/texera.github.io/blob/yiqundu/content/en/blog/flarum-discussion-integration/private-discus.gif?raw=true">
+    <img src="https://github.com/Texera/texera.github.io/blob/yiqundu/content/en/blog/flarum-discussion-integration/private-discus.gif?raw=true" alt="" style="width:100%">
   </a>
-  <figcaption align = "center">
+  <figcaption align = "center" style="font-size:1.2em;">
+    <i>
+      <b>Figure 7.</b> A user creates a private discussion under a separate tab and chooses the users/groups for this discussion
+    </i>
+  </figcaption>
+</figure>
+
+### 4. **Admin features**:
+
+The discussion feature of Texera can be managed and maintained through the Flarum forum admin page. An admin has various privileges, such as managing user accounts, management of extensions, and giving privileges to users.
+
+<figure align="center" style="width: 100%; max-width: none;">
+  <a href="https://github.com/Texera/texera.github.io/blob/yiqundu/content/en/blog/flarum-discussion-integration/admin.gif?raw=true
+">
+    <img src="https://github.com/Texera/texera.github.io/blob/yiqundu/content/en/blog/flarum-discussion-integration/admin.gif?raw=true
+" alt="" style="width:100%">
+  </a>
+  <figcaption align = "center" style="font-size:1.2em;">
     <i>
       <b>Figure 8.</b> 
     </i>
   </figcaption>
 </figure>
 
-5. **View and reply count**:
-<figure align="center">
-  <a href="flarum-view-count.png">
-    <img src="flarum-view-count.png" alt="Fig 9" style="width:100%">
+### 5. **View and reply count**:
+
+<figure align="center" style="width: 100%; max-width: none;">
+  <a href="https://hackmd.io/_uploads/H14l9Q7tT.pnghttps://hackmd.io/_uploads/H14l9Q7tT.png">
+    <img src="https://hackmd.io/_uploads/H14l9Q7tT.png" alt="" style="width:100%">
   </a>
-  <figcaption align = "center">
+  <figcaption align = "center" style="font-size:1.2em;">
     <i>
-      <b>Figure 9.</b> the number of views and replies for each dicussion is displayed
+      <b>Figure 9.</b> The number of views and replies for each dicussion
     </i>
   </figcaption>
 </figure>
 
-6.**Other features**:
+### 6.**Other features**:
 
-<figure align="center">
-  <a href="searchbar.png">
-    <img src="searchbar.png" alt="Fig 7" style="width:100%">
+<figure align="center" style="width: 100%; max-width: none;">
+    
+  <a href="https://hackmd.io/_uploads/rk2dSLXtp.png">
+    <img src="https://hackmd.io/_uploads/rk2dSLXtp.png" alt="" style="width:100%">
   </a>
-  <figcaption align = "center">
+  <figcaption align = "center" style="font-size:1.2em;">
     <i>
-      <b>Figure 10.</b> full text search functionality to allow users to search relevant posts
-    </i>
-  </figcaption>
-</figure>
-<figure align="center">
-  <a href="dropdown.png">
-    <img src="dropdown.png" alt="Fig 7" style="width:100%">
-  </a>
-  <figcaption align = "center">
-    <i>
-      <b>Figure 11.</b> search results can be sorted based on different options
+      <b>Figure 10.</b> Full-text search allows users to search relevant posts
     </i>
   </figcaption>
 </figure>
 
-### Future efforts
+<figure align="center" style="width: 50%; max-width: none;">
+  <a href="https://hackmd.io/_uploads/rkxp3HLQt6.png">
+    <img src="https://hackmd.io/_uploads/rkxp3HLQt6.png" alt="" style="width:100%">
+  </a>
+  <figcaption align = "center" style="font-size:1.2em;">
+    <i>
+      <b>Figure 11.</b> Search results sorted based on different options
+    </i>
+  </figcaption>
+</figure>
 
-**Mentions extension**: The mentions extension is already included by default when using composer to create flarum directory, which has been able to do the following:
+## Future improvement to support 'Mentions':
+
+When a user types in the "AT" character (@), we want to automatically show related resources such as users, workflows, projects, data sets, etc. We call this feature "mentions." There is a "mentions" extension already included when we use composer to create the Flarum directory, which can do the following:
 
 - mentioning of users and groups
-- mentioning of posts, which is used in post replies
+- mentioning of posts used in post replies
 
-**What We are still trying to achieve**: To further integrate the dicussion feature into Texera, we are hoping to be able allow users to mention Texera resources such as workflows and projects. However, this feature is still in developement and rigorous testing needs to ensure this feature will be bug-free.
+We will use this extension to implement the feature. One challenge is related to how to synchronize the resources in the MySQL database of Texera and the MySQL database of Flarum.
