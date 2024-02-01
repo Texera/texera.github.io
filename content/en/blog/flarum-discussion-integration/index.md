@@ -73,7 +73,6 @@ We wrote bash and powershell scripts to automatically install and configure Flar
     <li>configure the apache2 server</li>
     <li>restart the server to run the Flarum application</li>
   </ul>
-</p>
 
 ## Features
 
@@ -199,10 +198,9 @@ The discussion feature of Texera can be managed and maintained through the Flaru
 
 ### 6.**Other features**:
 
-<figure align="center" style="width: 100%; max-width: none;">
-    
+<figure align="center" style="display:inline-block; width:49%;">
   <a href="searchbar.png">
-    <img src="searchbar.png" alt="" style="width:100%">
+    <img src="searchbar.png" alt="" style="width:90%">
   </a>
   <figcaption align = "center" style="font-size:1.2em;">
     <i>
@@ -211,9 +209,9 @@ The discussion feature of Texera can be managed and maintained through the Flaru
   </figcaption>
 </figure>
 
-<figure align="center" style="width: 50%; max-width: none;">
+<figure align="center" style="display:inline-block; width: 49%;">
   <a href="dropdown.png">
-    <img src="dropdown.png" alt="" style="width:100%">
+    <img src="dropdown.png" alt="" style="width:60%">
   </a>
   <figcaption align = "center" style="font-size:1.2em;">
     <i>
