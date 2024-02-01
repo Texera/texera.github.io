@@ -12,8 +12,6 @@ contributors: ["Yiqun Du", "Henry Liu", "Xinyuan Liu"]
 affiliations: [UC Irvine]
 ---
 
-In this blog, we discuss how we support a online discussion forum in Texera using Flarum.
-
 ## Motivation
 
 As a platform to support collaborative data science, Texera needs an online forum that allows users to post issues, help each other, and discover new topics. We implemented this feature using Flarum, one of the popular open-source solutions available on GitHub. Supported and maintained by a large community of developers, Flarum has been well received due to its modern design, user-friendly interface, and minimal core with high extensibility.
