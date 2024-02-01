@@ -110,8 +110,8 @@ Extensions:
 As shown below, when a user logs into Texera, the user will also log in on the discussion forum site.
 
   <figure align="center" style="width: 100%; max-width: none;">
-  <a href="https://raw.githubusercontent.com/Texera/texera.github.io/yiqundu/content/en/blog/flarum-discussion-integration/user-sych.gif">
-    <img src="https://raw.githubusercontent.com/Texera/texera.github.io/yiqundu/content/en/blog/flarum-discussion-integration/user-sych.gif" alt="" style="width:100%">
+  <a href="user-sych.gif">
+    <img src="user-sych.gif" alt="" style="width:100%">
   </a>
   <figcaption align = "center" style="font-size:1.2em;">
     <i>
@@ -125,8 +125,8 @@ As shown below, when a user logs into Texera, the user will also log in on the d
 The following image shows how a discussion/post is created here. Users can add tags to a post, such as "General."
 
 <figure align="center" style="width: 100%; max-width: none;">
-  <a href="https://raw.githubusercontent.com/Texera/texera.github.io/yiqundu/content/en/blog/flarum-discussion-integration/make-a-basic-post.gif">
-    <img src="https://raw.githubusercontent.com/Texera/texera.github.io/yiqundu/content/en/blog/flarum-discussion-integration/make-a-basic-post.gif" alt="" style="width:100%">
+  <a href="make-a-basic-post.gif">
+    <img src="make-a-basic-post.gif" alt="" style="width:100%">
   </a>
   <figcaption align = "center" style="font-size:1.2em;">
       <b>Figure 4.</b> A user creates a dicussion and publishes the first post.
@@ -135,8 +135,8 @@ The following image shows how a discussion/post is created here. Users can add t
 </figure>
 
 <figure align="center" style="width: 100%; max-width: none;">
-  <a href="https://hackmd.io/_uploads/rJldK7XYa.png">
-    <img src="https://hackmd.io/_uploads/rJldK7XYa.png" alt="" style="width:200%">
+  <a href="reply1.png">
+    <img src="reply1.png" alt="" style="width:200%">
   </a>
   <figcaption align = "center" style="font-size:1.2em;">
     <i>
@@ -146,8 +146,8 @@ The following image shows how a discussion/post is created here. Users can add t
 </figure>
 
 <figure align="center" style="width: 100%; max-width: none;">
-  <a href="https://hackmd.io/_uploads/SJWAFXXK6.png">
-    <img src="https://hackmd.io/_uploads/SJWAFXXK6.png" alt="" style="width:100%">
+  <a href="reply2.png">
+    <img src="reply2.png" alt="" style="width:100%">
   </a>
   <figcaption align = "center" style="font-size:1.2em;">
     <i>
@@ -161,8 +161,8 @@ The following image shows how a discussion/post is created here. Users can add t
 Users with certain privileges can create private discussions that are only visible to a selected group of users
 
 <figure align="center" style="width: 100%; max-width: none;">
-  <a href="https://github.com/Texera/texera.github.io/blob/yiqundu/content/en/blog/flarum-discussion-integration/private-discus.gif?raw=true">
-    <img src="https://github.com/Texera/texera.github.io/blob/yiqundu/content/en/blog/flarum-discussion-integration/private-discus.gif?raw=true" alt="" style="width:100%">
+  <a href="private-discus.gif">
+    <img src="private-discus.gif" alt="" style="width:100%">
   </a>
   <figcaption align = "center" style="font-size:1.2em;">
     <i>
@@ -176,10 +176,8 @@ Users with certain privileges can create private discussions that are only visib
 The discussion feature of Texera can be managed and maintained through the Flarum forum admin page. An admin has various privileges, such as managing user accounts, management of extensions, and giving privileges to users.
 
 <figure align="center" style="width: 100%; max-width: none;">
-  <a href="https://github.com/Texera/texera.github.io/blob/yiqundu/content/en/blog/flarum-discussion-integration/admin.gif?raw=true
-">
-    <img src="https://github.com/Texera/texera.github.io/blob/yiqundu/content/en/blog/flarum-discussion-integration/admin.gif?raw=true
-" alt="" style="width:100%">
+  <a href="admin.gif">
+    <img src="admin.gif" alt="" style="width:100%">
   </a>
   <figcaption align = "center" style="font-size:1.2em;">
     <i>
@@ -191,8 +189,8 @@ The discussion feature of Texera can be managed and maintained through the Flaru
 ### 5. **View and reply count**:
 
 <figure align="center" style="width: 100%; max-width: none;">
-  <a href="https://hackmd.io/_uploads/H14l9Q7tT.pnghttps://hackmd.io/_uploads/H14l9Q7tT.png">
-    <img src="https://hackmd.io/_uploads/H14l9Q7tT.png" alt="" style="width:100%">
+  <a href="flarum-view-count.png">
+    <img src="flarum-view-count.png" alt="" style="width:100%">
   </a>
   <figcaption align = "center" style="font-size:1.2em;">
     <i>
@@ -205,8 +203,8 @@ The discussion feature of Texera can be managed and maintained through the Flaru
 
 <figure align="center" style="width: 100%; max-width: none;">
     
-  <a href="https://hackmd.io/_uploads/rk2dSLXtp.png">
-    <img src="https://hackmd.io/_uploads/rk2dSLXtp.png" alt="" style="width:100%">
+  <a href="searchbar.png">
+    <img src="searchbar.png" alt="" style="width:100%">
   </a>
   <figcaption align = "center" style="font-size:1.2em;">
     <i>
@@ -216,8 +214,8 @@ The discussion feature of Texera can be managed and maintained through the Flaru
 </figure>
 
 <figure align="center" style="width: 50%; max-width: none;">
-  <a href="https://hackmd.io/_uploads/rkxp3HLQt6.png">
-    <img src="https://hackmd.io/_uploads/rkxp3HLQt6.png" alt="" style="width:100%">
+  <a href="dropdown.png">
+    <img src="dropdown.png" alt="" style="width:100%">
   </a>
   <figcaption align = "center" style="font-size:1.2em;">
     <i>
