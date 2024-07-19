@@ -10,117 +10,183 @@ weight: 50
 contributors: ["Yicong Huang", "Kevin Wu" ]
 affiliations: ["Computer Science, UC Irvine"]
 ---
+
 # Motivation
 
-The R programming language is still a widely used language to this day. Users include statisticians, machine learning engineers, bioinformatics scientest, and many more use R in their applications.
-Therefore, we wanted to allow a new set of users to use Texera with R, this way they may be able to incorporate Texera into their work.
+The R programming language is widely used in many fields, such as bioinformatics, statistical analysis, and social science. Its popularity is driven by its capabilities and the growing demand for data-related work. Given its significance, our goal was to allow users to seamlessly integrate R into Texera workflows.
 
-
-Before this project, Texera was lacking well-defined support for the R programming language in its workflows.
-Originally, Texera used Python UDFs and rpy2 to use R code in workflows, which proved to be an inelegant and non-robust solution. As a result, we decided to review the implementation of R into Texera with rpy2 and various other tools.
-After finishing this project, we were able to cleanly support usage of R code in Texera and introduced writing R UDFs for both Table and Tuple API, similar to that of the Python UDFs.
-
-Shown below in *Figure 1* is a sample workflow created by one of our users that exclusively uses R UDFs, all of which employed the Tuple API.
-<figure style="margin: auto; text-align: center">
-<a>
-<img src="working_rudf_workflow.png" alt="Fig 1" style="width:100%;">
-</a>
-<figcaption align=center style="text-align:center; font-style: italic">Figure 1: A sample workflow using R UDFs only. All of the operators are using Tuple API</figcaption>
-</figure>
-
-# Initial Planning
-## Arrow Flight and the Flight Server-Client Model
-Originally, we wanted to use Arrow’s Flight module to write a native R Flight client-server model. This was due to the fact that a similar architecture with Arrow Flight existed for Python UDFs.
-However, upon further research, we learned that R did not have a native and independent implementation of Arrow Flight.
-Instead, R Arrow Flight works by calling methods taken from PyArrow Python. Because of this a few issues came up, the biggest being that only Python code could be used to edit anything that passed through the Flight server, rendering the purpose of R UDF useless.
-
-
-As a result, this design had to be abandoned in favor of using only Arrow and `rpy2` (no Arrow Flight), which we learned would work out perfectly in our favor.
-For context, `rpy2` is a Python library that allows a developer to write and run R code in an embedded session of R in Python.
-As of writing this report, the Arrow R community has no plans to add an independent, native implementation of Arrow Flight.
-
-Shown below in *Figure 2* was one of the various planning and working sessions we had together.
-
-<figure style="margin: auto; text-align: center">
-<a>
-<img src="arrow_flight_architecture.jpg" alt="Fig 2" style="width:100%;">
-</a>
-<figcaption align=center style="text-align:center; font-style: italic">Figure 2: One of the many planning sessions that we had together. This whiteboard shows the original objective of using Arrow Flight with R UDFs and how it fit in with the rest of Texera.
-Eventually, this design was discarded in favor of using rpy2.</figcaption>
-</figure>
+We want to enhance Texera by extending its support to include R code and facilitating the creation of R user-defined functions (UDFs) for both the table and tuple APIs. Doing so would mirror the functionality of Python UDFs, allowing both experienced and new users of Texera to leverage R in their work.
 
 # Challenges
-Throughout this journey, we faced several challenges and blockers that we encountered when developing the general, overarching design of R UDF.
+The current support for R UDF in Texera utilizes Python User-Defined Functions and `rpy2` (a Python library to use R in Python) to incorporate R code. However, this approach has two limitations, compatability and performance.
 
-## Rpy2 and reticulate
+## Challenge 1: Compatibility
+The first challenge we faced was compatibility issues between R and Python. While `rpy2` is used to call R from Python, some R packages also internally call Python (e.g. `reticulate`), causing compatability issues between the two systems. Therefore, we have to make sure any compatability issues were resolved.
 
-`Reticulate` is an R package that allows the use of Python functions and methods inside an R session. In contrast, `rpy2` allows usage of R in Python. Back in 2018, someone from GitHub posted an issue saying that there was a compatibility issue with using rpy2 and reticulate at the same time.
+## Challenge 2: Performance
 
-The main issue was conflicting lock files between Python and R threads that did not allow `rpy2` and `reticulate` to be used at the same time. This was because either reticulate or rpy2 would lock the R thread and never allow the other to use it, putting each other into deadlock. This issue was eventually fixed in 2022, more can be seen here ([GitHub Issue](https://github.com/rstudio/reticulate/issues/208)).
+The second challenge we faced was performance issues in the previous design. Data in Texera travels down from Java to Python to R and then back up in the opposite direction. In the old design, multiple rounds of serialization, deserialization, and copy operations were done on the same data, creating significant overhead. We wanted to eliminate this as much as possible in our new design.
 
-## Rpy2 and Arrow (rpy2-arrow)
+# Initial Design
+## Arrow Flight and the Flight Server-Client Model
 
-We had to determine a good way to bridge the gap between `R`, `Arrow`, and `rpy2`. We found out that the relatively new `rpy2-arrow` Python library (created around 2020) worked perfectly after some trial and error ([rpy2-arrow GitHub](https://github.com/rpy2/rpy2-arrow)). It was initially difficult to use, but worked out fine in the end.
+Our original objective was to employ [Arrow’s Flight module](https://arrow.apache.org/docs/format/Flight.html) in order to develop a native [R Flight client-server model](https://github.com/apache/arrow/blob/main/r/R/flight.R). The implementation of such a model presents several advantages, paramount among them being the standardization of frameworks for both R UDF and Python UDF. Notably, the Python UDF framework already utilizes its exclusive Arrow Flight client-server model. Adopting a similar approach in R would streamline maintenance and future development. Moreover, Arrow Flight's in-memory data-transfer capabilities significantly enhance performance, facilitating rapid operations within data-intensive workflows.
 
-A significant advantage `rpy2-arrow` provides is through the Arrow RPC framework, zero copy operations are done on Arrow data, everything exclusively uses pointers. This is great for performant results and was proven to be useful
-when applying the final designs for both Table and Tuple APIs.
+However, we discovered the following from the [R Arrow Flight documentation](https://arrow.apache.org/docs/r/articles/flight.html):
+>"At present the arrow package in R does not supply an independent implementation of Arrow Flight..."
 
-# Table API
+Instead, R Arrow Flight operates by invoking methods from the PyArrow Python package, including the code for running a Flight server in R. The most critical issue with this realization is because we wanted R UDF to be executed on the Flight server side. Due to the lack of a native R Flight server, this goal no longer was feasible.
 
-## Challenges
+Regrettably, as of July 14, 2024, there was still no independent implementation of Arrow Flight. Currently, the R Arrow developers have no immediate plans to do so as well, as shown in their biweekly [meeting notes](https://docs.google.com/document/d/1nSIfJw8mfqtvScqvSVqmktpWff80pFmkqiZT7nTtiDo/edit#heading=h.k1ts4kvvl8jq). Consequently, we had to devise an alternative solution for R UDF that leverages Arrow and `rpy2` alone, eschewing Arrow Flight.
 
-- Bridging R Arrow to Python Arrow using `rpy2` and `rpy2-arrow`, we had to understand how the converter worked, especially in a multiple context system like Texera.
-- The Table API does not work well for storing instances of advanced objects, and is instead best used for primitive types.
-- We found that `data.frame` in R can store objects by first having the user manually serializing the object and then storing the object in the resulting Table. This is a very clunky solution and certainly not robust at all, especially since we have to rely on the user writing the serialization/deserialization code. We scrapped this design for the Tuple API after finding out these limitations.
+# Our Proposed Design
 
-## General Design/Solution
+Our proposed architecture features a three-layered design, where the data flows from Java to Python, then to R, before returning back to Python and Java. An  illustration of this architecture is in *Figure 1* below.
 
-After lots of testing with R code and CSV data, our final design involved both Arrow Tables and R `data.frame`, utilizing rpy2-arrow’s `rarrow_to_py_table` function and its local conversion rules to facilitate the conversion. Essentially, the user will output an R data.frame (or something convertible to one) and the engine will convert that into an Arrow Table and pass it onto the next operator(s) for future use.
-Due to the nature of rpy2-arrow and Arrow in general, performance is very fast since only C pointers are used, with zero copies created.
-
-*Figure 3* below shows a very simple workflow that uses Table API.
 <figure style="margin: auto; text-align: center">
 <a>
-<img src="./sample_table_api_workflow.png" alt="Fig 3" style="width:100%;">
+<img src="rudf_architecture.png"Fig 1" style="width:80%;">
 </a>
-<figcaption align=center style="text-align:center; font-style: italic">Figure 3: Sample showcase of Table API in Texera. Note the printed results matches that of the source Table, indicating a successful conversion from one operator to the next.</figcaption>
+<figcaption align=center style="text-align:center; font-style: italic">Figure 1: Figure 1: A concise overview of our proposed design for R UDF with all the libraries marked.</figcaption>
 </figure>
 
-# Tuple API
+The core of the design for R UDF relies predominantly on `rpy2` and `rpy2-arrow`, with both playing an essential role in ensuring smooth and consistent conversions between Python and R. In this architecture, the Python Worker uses `rpy2` to run an embedded R session. Data sent downstream from the JVM to Python is then transfered to R using `rpy2` and `rpy2-arrow`.
 
-## Challenges
+After the R Executor finishes running, both `rpy2` and `rpy2-arrow` convert the returned values from R back to Python. The Python Worker then processes the returned data as necessary and transmits it back upstream to the JVM.
 
-- Finding a good representation of a Tuple in R.
-  - We first started with Arrow’s `StructArray` to represent a Tuple in R, but found out this had limitations, especially with dealing with binary/object data types.
-  - It was a good theoretical start due to the performant nature of rpy2-arrow and Arrow datatypes and was included in the final design.
-- Storing objects in R lists.
-  - Initially thought we could not do it, but we found out you can store objects in R `List`, though the representation is a little complicated.
-  - The main challenge was to replace Arrow StructArray with a manually constructed Python dictionary that could be translated to the R side via rpy2.
-- Method on returning 0, 1, or more than 1 tuple.
-  - After successfully returning 1 tuple through testing, we needed to expand to return 0, 1, or more than 1 tuple.
-  - We discovered the R `coro` package, which allowed for Python-like generators to be written in R. We decided to use `coro` as a result.
-  - This provides a more elegant way for users to write R UDFs, though it still has many limitations due to the rpy2 engine. Limitations include having to import the `coro` package in every UDF if you want to use Tuple API, and functions must be written within the generator (have to use anonymous/lambda function).
+## Solving Challenge 1: Compatibility
 
-## General Design/Solution
+As mentioned previously, R and Python had compatabilility issues stemming from the fact that they were able to portions of each other at the same time. The biggest example of this issue pertained to the concurrent use of `reticulate` (an R package to use Python within R) and `rpy2`. In 2018, an issue was reported on GitHub highlighting a compatibility problem when using both libraries simultaneously.
 
-As mentioned above, `coro` forms the backbone of the Tuple API design.
-Users have to write their own generator function that will yield an R List, which is R’s representation of a Tuple. In the backend, we split the output Tuple from each opeartor into two parts.
-One part contains the primitive types and allows us to continue using Arrow's `StructArray`,
-the other part contains the binary objects that were serialized/deserialized and had to be manually converted on the backend.
-We then combined the two separate parts together into the final Tuple, making sure to preserve column ordering and also support adding non-primitive objects in lists.
+The primary issue was from conflicting lock files between Python and R threads, causing deadlocks as either `reticulate` or `rpy2` would lock either the session of Python or R, preventing the other from accessing it. We were pleased to discover that this issue was resolved in 2022, allowing the concurrent use of `rpy2` and `reticulate`. Further details can be found [here](https://github.com/rstudio/reticulate/issues/208).
 
-After adding Tuple API, we also added a toggle for R executors in order to allow users to choose between Table or Tuple API. Below in *Figure 4* is a very simple example workflow that uses Tuple API.
+Additionally, we realized that each block of R code executed through `rpy2` ran in its own miniature, containerized environment. This isolation helped to avoid compatibility issues with libraries, particularly when testing workflows with multiple R UDF operators, each having its own separate R environment.
+
+## Solving Challenge 2: Performance
+
+To address performance issues, we needed an effective method to bridge `R`, `Arrow`, and `Python` together. We found that the [`rpy2-arrow`](https://github.com/rpy2/rpy2-arrow) library, developed around 2020, functioned well for our purposes.
+
+A significant advantage of `rpy2-arrow` is its adaptation of the Arrow RPC framework, which enables in-memory operations on Arrow data. Furthermore, `rpy2-arrow` achieves maximum efficiency by using pointers extensively, encouraging use of zero-copy operations. These advantages greatly reduce data transfer overhead between different langauge environments.
+
+`rpy2-arrow` is also an extension of the `rpy2` library, providing smooth usage when used together.
+
+## A Demo Workflow of R UDFs
+As a showcase of the successes of our proposed design, below in *Figure 2* is a sample workflow created by one of our users that exclusively uses R UDFs, all of which employed the tuple API.
+
 <figure style="margin: auto; text-align: center">
 <a>
-<img src="./sample_tuple_api_workflow.png" alt="Fig 4" style="width:100%;">
+<img src="rudf_sample_workflow.png" alt="Fig 2" style="width:100%;">
 </a>
-<figcaption align=center style="text-align:center; font-style: italic">Figure 3:
-Sample showcase of Tuple API in Texera.
-Notice how `library(coro)` is used in both executors. Also notice how in the UDF executor's code (the code in the middle), the function must be written as an anonymous function.</figcaption>
+<figcaption align=center style="text-align:center; font-style: italic">Figure 2: A sample workflow using R UDFs only. All of the operators are using the tuple API.</figcaption>
 </figure>
 
+This demo workflow was used in a research project intended to conduct Single Cell RNA analysis with R. The main driver for conducting the analysis came from the [`Seurat` ](https://satijalab.org/seurat/) package, which contains the eponymous `Seurat` object, an object that can store extensive data about single cells. In this workflow, the created `Seurat` object was frequently used as both input and output. Each step in the workflow utilized R UDFs to modify, extract, or inspect the `Seurat` object in some way, as can be seen from the labeled steps assigned to each R UDF operator.
 
-# Conclusion/Final Design
+Moreover, the branching sections of the workflow featured visual aids extracted from the `Seurat` object as output. These visualizations were then promptly embedded in HTML code created by their preceeding R UDF operators.
 
-This is a great start to introduce R UDF for Texera. Hopefully, this will unlock a new set of uses for Texera, which is always exciting to see happen. We wish that future improvments will be made by
-other developers and we hope that our work and findings have been helpful in laying down the foundation for others.
+# Supported R UDF APIs
+
+## Tuple API
+### What is R UDF Tuple API?
+The Ttuple API allows R code to process and return individual tuples one at a time, making it especially useful for stream-like data interfaces.
+
+### How does R UDF Tuple API Work?
+
+The goal of the tuple API is to enable users to write an R generator that yields an R `Tuple` or any structure convertible to an R `Tuple`. This is done through R's `coro` package, which supports writing Python-like generators in R. The written generator receives two arguments: the `tuple` itself and the `port`. Currently, the `port` argument is unused but may be utilized in the future. Lastly, users can also yield zero, one, or multiple tuples.
+
+In the backend engine, the returned R `Tuple` is converted into a Python `Tuple`, with automatic type conversion and serialization from R to Python. When the next operator receives the `Tuple`, it is split into two subsequent `Tuples`: one containing non-binary data and the other containing binary data. The non-binary `Tuple` is converted into an Arrow `StructArray`, leveraging Arrow's advantages. The binary tuple undergoes manual deserialization to retrieve the original object(s). Finally, both `Tuples` are combined and passed into the R UDF as an argument. Note that for each `Tuple`, we only use one serialization and deserialization operation, thereby improving performance.
+
+### When should R UDF Tuple API be used?
+
+Users should employ the tuple API when they need to process, modify, or inspect data in individual units. Another suitable use case is when users want to quickly process data without waiting for an entire chunk as required by the table API.
+
+### Tuple API: Example Code
+
+Below is a simple example of using the tuple API in an R UDF. This scenario demonstrates how to yield five `Tuples` each containing a string, integer, and boolean component from the source. Then, for each `Tuple`, we can yield five additional `Tuples` after modifying each Tuple's integer component.
+
+#### Source R UDF Tuple Operator
+
+Here, the user writes R code to yield a `List` with three attributes: `int_attr`, `str_attr`, and `bool_attr`. Note that since R does not natively support generators, we import the `coro` package. The body for the `function()` part of the code must be an anonymous function (similar to a Python lambda function).
+
+```R
+library(coro)
+
+coro::generator(function() {
+    for (i in 1:5) {
+        tuple <- list(
+            int_attr = 1L,  # R integer
+            str_attr = "A", # R string
+            bool_attr = TRUE # R logical (boolean)
+        )
+        yield(tuple)
+    }
+})
+```
+
+Next, the user writes a function to increment the `int_attr` component of the `Tuple` by the index taken from a for loop. In this case, we can yield five separate `Tuples`, all of which modify the original `Tuple`.  Again, the body of `function(tuple, port)` must be an anonymous function.
+```R
+library(coro)
+
+coro::generator(function(tuple, port) {
+    for (i in 1:5) {
+        new_tuple <- tuple
+        new_tuple$int_attr <- new_tuple$int_attr + i
+        yield (new_tuple)
+    }
+})
+```
+
+## Table API
+### What is R UDF Table API?
+The Table API allows R code to process and return entire tables in a single operation. This functionality is particularly beneficial when dealing with large chunks of data that need to be processed or modified in bulk.
+
+### How does R UDF Table API Work?
+The objective of the table API is for the user to write an R function that returns an R `data.frame` or any structure convertible to a `data.frame` in R, such as an R `list`, `matrix`, or `vector`. The provided function should accept two arguments: the `table` itself and the `port`. Currently, the `port` argument is unused but may be utilized in the future.
+
+In the engine's backend, the returned R `data.frame` is converted into an PyArrow `Table` using `rpy2-arrow`, facilitating seamless data transfer to the next operator.
+
+### When should R UDF Table API be used?
+Users should employ the table API when they need to process or pass along bulk data in large, tabular chunks. Another suitable use case for the table API is when users need to modify an entire `Table` and return the entire modified result.
+
+### Table API: Example Code
+
+Below is an example of simple usage of the table API in an R UDF. In this scenario, we aim to return a simple table from R containing three attributes and three rows of data. We then add a new row, resulting in a total of four rows of data.
+
+The Source R UDF Table Operator example is as follows. Here, the user writes R code to return a `data.frame` with three attributes: `Training`, `Pulse`, and `Stamina`:
+
+```R
+function() {
+    table <- data.frame(
+        Training = c("Strength", "Stamina", "Other"),
+        Pulse = c(100L, 150L, 120L),
+        Duration = c(60, 30, 45)
+    )
+
+    return(table)
+}
+```
+Next, in the R UDF Table Operator, the user writes a function to add a new row to the source Table:
+```R
+function(table, port) {
+    # Note that the port argument is unused, this is intentional for now
+    new_row <- data.frame(
+        Training = "TEST",
+        Pulse = 123L,
+        Duration = 999
+    )
+
+    table <- rbind(table, new_row)
+    return(table)
+}
+```
+The final table will now contain a total of four rows.
+
+In the final tuple, the `int_attr` will be incremented from 1 to 2.
+
+# Conclusion
+The introduction of R UDF support in Texera marks a significant milestone, opening up new opportunities and use cases for the platform. This development paves the way for a broader range of users and applications, enriching the Texera ecosystem.
+
+We hope that this work and insights serve as a solid foundation for further enhancements by other developers. It is our hope that future improvements will continue to be built on top of this foundation, expanding Texera's capabilities.
+
+# Acknowledgements
+We want to credit Prof. Chen Li for guiding us throughout this journey, Kun Woo (Chris) Park for being a user of R UDF, Cornell colleagues Prof. Shuibing Chen, Sally Lee, Dongliang Leng, for providing single-cell analysis R programs converted to the workflow in *Figure 2*, and the entire Texera Team.
