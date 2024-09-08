@@ -11,13 +11,6 @@ contributors: ["Minchong Wu"]
 affiliations: ["Computer Science, UC Irvine"]
 ---
 
-# Suggesting Python Code Type Annotations with LLMs -- A Language Server Enhancement
-
-<small>Posted August 30, 2024 by Minchong Wu from Computer Science, UC Irvine - 7 min read</small>
----
-
-In this blog, we introduce how we enhanced the Texera Python User-Defined Function （UDF) editor by integrating Large Language Models (LLMs) to suggest Python code type annotations, thereby overcoming the limitations of dynamic typing of traditional language servers like  Pyright and python-language-server (Pylsp).
-
 ## Motivation
 
 The User-Defined Function (UDF) operators in Texera are crucial for allowing developers to customize their workflows. To improve the development experience, we need a python language server that can detect both syntax and semantic errors early in the coding process.
