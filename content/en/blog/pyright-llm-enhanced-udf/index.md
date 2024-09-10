@@ -28,7 +28,7 @@ Previously, we relied on the Pylsp for basic language server functions like synt
   </figcaption>
 </figure>
 
-In Figure 1, there is a very basic comparison between two language servers on the same code. The yellow lines represent warnings, and the red lines represent errors. With Pylsp, it can recommend fixes with formatting suggestions from [PEP 8 style guide](https://peps.python.org/pep-0008/#style-guide), such as the [two blank line requirement](https://peps.python.org/pep-0008/#blank-lines) between functions. It is limited to formatting warnings, instead of code correctness. Also, as shown in the figure, when using Pylsp, there is only one red line, indicating that it detected only one meaningful semantic error. In contrast, Pyright correctly identified all the relevant errors, which is reflected by the additional red lines. For example, there is a type error in the second `def` block where `y = x + 5` and `x` is a string. This leads to a semantic error, as you cannot add a string and an integer. This demonstrates Pyright’s superior ability to detect semantic issues, making it a better choice for enhancing the UDF code editor.
+Figure 1 shows a comparison between two language servers on the same code. The yellow lines represent warnings, and the red lines represent errors.  Pylsp can recommend fixes with formatting suggestions from  [PEP 8 style guide](https://peps.python.org/pep-0008/#style-guide), such as the [two blank line requirement](https://peps.python.org/pep-0008/#blank-lines) between functions. It is limited to formatting warnings, instead of code correctness. As shown in the figure, Pylsp has only one red line, indicating that it detected only one semantic error. In contrast, Pyright correctly identified all errors, reflected by the additional red lines. For example, there is a type error in the second `def` block where `y = x + 5` and `x` is a string. This leads to a semantic error, as we cannot add a string and an integer. This demonstrates Pyright’s superior ability to detect semantic errors, making it a better choice for enhancing the UDF code editor.
 
 
 ## Challenge: Type Inference Without Type Annotations
@@ -50,13 +50,13 @@ As you can see, there are some semantic errors that Pyright is unable to detect 
 
 ## Solution
 **Type Annotation with LLM**
-To tackle the challenge of handling code without type annotations, we integrated Large Language Models (LLM) into the UDF editor. This integration enables the LLM to automatically suggest type annotations, thereby enhancing the effectiveness of Pyright's static analysis. The LLM generate type annotation suggestions based on the context of the code. Users need to decide whether to accept the suggestion, and if they do, the suggestion will be added after the argument.
+To tackle the challenge of handling code without type annotations, we integrated a Large Language Models (LLM) into the UDF editor. This integration enables the LLM to automatically suggest type annotations, thereby enhancing the effectiveness of Pyright's static analysis. The LLM generate type annotation suggestions based on the context of the code. Users need to decide whether to accept the suggestion, and if they do, the suggestion will be added after the argument.
 
-We developed a backend RESTful API that interacts with OpenAI's GPT-4 API to generate these type annotation suggestions. Here are some key aspects of our implementation:
+We developed a backend RESTful API that interacts with OpenAI's GPT-4 API to generate type annotation suggestions. Here are some key aspects of our implementation:
 
-1. **API Design**: Our API integrates AI-assisted type annotations into the Texera UDF editor. The frontend Angular service, `AIAssistantService`, provides a method to request type annotations for given code snippets. It communicates with a backend Scala resource, `AIAssistantResource`, which handles authentication, processes requests, and interacts with the OpenAI GPT-4 API. The backend formats the code context into a specific prompt structure, sends it to OpenAI's chat completions API, and returns the suggested type annotations to the frontend. This design ensures secure, efficient communication between the user interface, our server, and the AI model, delivering intelligent type suggestions.
-2. **Prompt Engineering**: We experimented with various prompts to optimize the LLM's performance. In the beginning, we simply asked it to provide type annotations for arguments, but we found that it often responded with explanations that we didn't need, which would cause errors if inserted into the code. So, we defined its task strictly to return in the form of `: type suggestion`, and we provided several different examples for the LLM to learn from to ensure it strictly follows our requirements, avoiding breaking the user's code.
-3. **Prompt Effectiveness**: We found that prompts providing more context about the function's purpose and usage led to more accurate type suggestions. After testing, we found that most of the time, it can provide satisfactory results, but occasionally, unsatisfactory suggestions may occur. Therefore, users still need to have some judgment to decide whether to accept or reject the type suggestion.
+1. **API Design**: Our API integrates AI-assisted type annotations into the Texera UDF editor. The frontend Angular service, `AIAssistantService`, provides a method to request type annotations for the given code snippet. It communicates with a backend Scala service, `AIAssistantResource`, which handles authentication, processes requests, and interacts with the OpenAI GPT-4 API. The backend formats the code context into a specific prompt structure, sends it to OpenAI's chat completions API, and returns the suggested type annotations to the frontend. This design ensures secure, efficient communication between the user interface, the server, and the AI model.
+2. **Prompt Engineering**: We experimented with various prompts to optimize the LLM's performance. In the beginning, we simply asked it to provide type annotations for arguments, but we found that it often responded with explanations that were needed, which would cause errors if they inserted into the code. So we defined its task strictly to return in the form of `: type suggestion`, and  provided several different examples for the LLM to learn from to ensure it strictly follows our requirements.
+3. **Prompt Effectiveness**: We found that prompts providing more context about the function's purpose and usage led to more accurate type suggestions. After testing, we found that most of the time, it can provide satisfactory results, but occasionally, unsatisfactory suggestions may occur. Therefore, users still need to provide input to decide whether to accept or reject the type suggestion.
 
 <figure align="center">
   <a href="suggestion%20_UI.png">
@@ -130,10 +130,10 @@ With all type annotations in place, users can fully enjoy Pyright's precise sema
 </figure>
 
 ## Limitation
-As we all know, while AI is incredibly smart and convenient, it can still make mistakes in rare cases. Therefore, users cannot completely rely on the type suggestions returned by the LLM; they are merely suggestions. Users need to evaluate whether the suggestion is correct based on the design requirements of their code and make a careful choice to accept or decline it.
+AI can make mistakes in some cases. Therefore, users cannot completely rely on the type suggestions returned by the LLM, which are merely suggestions. Users need to evaluate whether each suggestion is correct and maked a careful choice to accept or decline it.
 
 ## Summary
 In this blog, we showcased how we integrated the LLM with the Pyright language server to enhance the user experience of editing UDFs in Texera.
 
 ## Acknowledgements
-Thanks to Prof. Chen Li, Yicong Huang, and the Texera team for their help in the project and in this blog.
+Thanks to PhD Student Yicong Huang, Prof. Chen Li, and the Texera team for their help in the project.
