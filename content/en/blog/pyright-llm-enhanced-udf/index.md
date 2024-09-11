@@ -1,7 +1,7 @@
 ---
 title: "Suggesting Python Code Type Annotations with LLM -- A Language Server Enhancement"
 description: ""
-lead: "In this blog, we introduce how we enhanced the Texera Python User-Defined Function（UDF) editor by integrating Large Language Models (LLM) to suggest Python code type annotations, thereby overcoming the limitations of dynamic typing of traditional language servers like  Pyright and python-language-server (Pylsp)."
+lead: "In this blog, we introduce how we enhanced the Texera Python User-Defined Function(UDF) editor by integrating Large Language Models (LLM) to suggest Python code type annotations, thereby overcoming the limitations of dynamic typing of traditional language servers like  Pyright and python-language-server (Pylsp)."
 date: 2024-09-07T11:38:41-07:00
 publishDate: 2024-09-10T00:00:00-07:00
 lastmod: 2024-09-10T00:00:00-07:00
